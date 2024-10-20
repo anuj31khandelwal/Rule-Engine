@@ -1,5 +1,36 @@
 # Rule-Engine
 
+# Project Title
+
+## Description
+Objective
+This is a simple 3-tier rule engine application designed to determine user eligibility based on attributes such as age, department, income, and spend. The system leverages an Abstract Syntax Tree (AST) to dynamically create, combine, and modify rules.
+
+Features
+Define conditional rules and store them as AST.
+Combine multiple rules into a single AST to improve efficiency.
+Evaluate rules against user data in JSON format.
+Data Structure
+A Node structure is used to represent the AST with the following fields:
+
+type: Node type ("operator" for AND/OR, "operand" for conditions)
+left: Left child Node
+right: Right child Node
+value: Optional value for operand nodes (e.g., number for comparisons)
+Sample Rules
+Rule 1: ((age > 30 AND department = 'Sales') OR (age < 25 AND department = 'Marketing')) AND (salary > 50000 OR experience > 5)
+Rule 2: ((age > 30 AND department = 'Marketing')) AND (salary > 20000 OR experience > 5)
+
+## Features
+- Feature 1
+- Feature 2
+
+## Installation
+Steps to install the project:
+```bash
+git clone URL
+cd project-directory
+
 Objective
 This is a simple 3-tier rule engine application designed to determine user eligibility based on attributes such as age, department, income, and spend. The system leverages an Abstract Syntax Tree (AST) to dynamically create, combine, and modify rules.
 
@@ -23,11 +54,10 @@ Create a rule by sending a rule string as input.
 Example Request:
 
 json
-///
 {
   "rule_string": "age > 30 AND department = 'Sales'"
 }
-///
+
 POST /combine_rules
 Combine multiple rules into a single AST.
 Example Request:
