@@ -1,4 +1,5 @@
 # Rule-Engine
+
 Objective
 This is a simple 3-tier rule engine application designed to determine user eligibility based on attributes such as age, department, income, and spend. The system leverages an Abstract Syntax Tree (AST) to dynamically create, combine, and modify rules.
 
@@ -22,19 +23,21 @@ Create a rule by sending a rule string as input.
 Example Request:
 
 json
-Copy code
+///
 {
-"rule_string": "age > 30 AND department = 'Sales'"
+  "rule_string": "age > 30 AND department = 'Sales'"
 }
+///
 POST /combine_rules
 Combine multiple rules into a single AST.
 Example Request:
 
 json
-Copy code
+///
 {
-"rules": ["rule1", "rule2"]
+  "rules": ["rule1", "rule2"]
 }
+///
 POST /evaluate_rule
 Evaluate a rule against provided user data.
 Example Request:
@@ -42,13 +45,13 @@ Example Request:
 json
 Copy code
 {
-"rule": "combined_rule_ast",
-"data": {
-"age": 35,
-"department": "Sales",
-"salary": 60000,
-"experience": 3
-}
+  "rule": "combined_rule_ast",
+  "data": {
+    "age": 35,
+    "department": "Sales",
+    "salary": 60000,
+    "experience": 3
+  }
 }
 Dependencies
 Java
