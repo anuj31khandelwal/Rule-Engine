@@ -1,11 +1,12 @@
 package entity;
 
+@Table(name = "nodes")
 public class Node {
-    private String type;  // "operator" or "operand"
-    private Node left;
-    private Node right;
-    private String value;  // for operand nodes
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private String type;
     public Node() {
     }
 
