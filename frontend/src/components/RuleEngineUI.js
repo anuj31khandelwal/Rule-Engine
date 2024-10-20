@@ -6,68 +6,142 @@ import Label from './ui/Label';
 import Textarea from './ui/Textarea';
 import { Sliders, Play, Plus, Code } from 'lucide-react';
 
-
 const RuleEngine = () => {
-  const [rule, setRule] = useState('');
+  const [newRule, setNewRule] = useState('');
+  const [rules, setRules] = useState([]);
   const [userData, setUserData] = useState('{"age": 35, "department": "Sales", "salary": 60000}');
+  const [combinedRule, setCombinedRule] = useState('');
+  const [evaluationResult, setEvaluationResult] = useState('');
 
-  const handleAddRule = () => {
-    console.log('Rule added:', rule);
-    setRule('');
+  const addRule = () => {
+    if (newRule) {
+      setRules([...rules, newRule]);
+      setNewRule('');
+    }
   };
 
-  const handleEvaluateRule = () => {
-    console.log('Evaluating rule with data:', userData);
+  const combineRules = () => {
+    setCombinedRule(rules.join(' AND '));
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-700 via-blue-600 to-teal-500 p-8 flex items-center justify-center">
-      <Card className="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-2xl">
-        <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
-          <CardTitle className="text-4xl font-bold text-center flex items-center justify-center py-4">
-            <Sliders className="mr-3 h-8 w-8" />
-            Rule Engine
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-2xl font-semibold text-gray-800 flex items-center">
-              <Plus className="mr-2 h-5 w-5 text-purple-500" />
-              Create New Rule
-            </h2>
-            <div className="flex space-x-2">
-              <Input
-                placeholder="Enter rule (e.g., age > 30 AND department = 'Sales')"
-                value={rule}
-                onChange={(e) => setRule(e.target.value)}
-                className="flex-grow text-lg"
-              />
-              <Button onClick={handleAddRule} className="bg-purple-500 hover:bg-purple-600 text-white">
-                Add Rule
-              </Button>
-            </div>
-          </div>
+  const parseRule = (ruleString) => {
+    const tokens = ruleString.match(/\S+/g) || [];
+    let index = 0;
 
-          <div className="space-y-4">
-            <h2 className="text-2xl font-semibold text-gray-800 flex items-center">
-              <Code className="mr-2 h-5 w-5 text-blue-500" />
-              User Data (JSON format)
-            </h2>
-            <Textarea
-              value={userData}
-              onChange={(e) => setUserData(e.target.value)}
-              rows={4}
-              className="w-full text-lg"
-            />
-          </div>
+    const parseExpression = () => {
+      if (index >= tokens.length) return null;
 
-          <Button onClick={handleEvaluateRule} className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white text-lg py-6">
-            <Play className="mr-2 h-4 w-4" /> Evaluate Rule
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
+      if (tokens[index] === 'AND' || tokens[index] === 'OR') {
+        const operator = tokens[index++];
+        const left = parseExpression();
+        const right = parseExpression();
+        return { type: 'operator', value: operator, left, right };
+      } else if (tokens[index] === 'NOT') {
+        index++;
+        const operand = parseExpression();
+        return { type: 'operator', value: 'NOT', operand };
+      } else {
+        const left = tokens[index++];
+        const operator = tokens[index++];
+        const right = tokens[index++];
+        return { type: 'comparison', left, operator, right };
+      }
+    };
 
-export default RuleEngine;
+    return parseExpression();
+  };
+
+  const evaluateNode = (node, data) => {
+    if (node.type === 'operator') {
+      switch (node.value) {
+        case 'AND':
+          return evaluateNode(node.left, data) && evaluateNode(node.right, data);
+        case 'OR':
+          return evaluateNode(node.left, data) || evaluateNode(node.right, data);
+        case 'NOT':
+          return !evaluateNode(node.operand, data);
+      }
+    } else if (node.type === 'comparison') {
+      const left = isNaN(node.left) ? data[node.left] : parseFloat(node.left);
+      const right = isNaN(node.right) ? data[node.right] : parseFloat(node.right);
+      switch (node.operator) {
+        case '>': return left > right;
+        case '<': return left < right;
+        case '>=': return left >= right;
+        case '<=': return left <= right;
+        case '=': return left === right;
+        default: return false;
+      }
+    }
+    return false;
+  };
+
+  const evaluateRule = () => {
+    try {
+      const data = JSON.parse(userData);
+      const ruleToEvaluate = combinedRule || rules[rules.length - 1];
+      const parsedRule = parseRule(ruleToEvaluate);
+      const result = evaluateNode(parsedRule, data);
+      setEvaluationResult(result ? 'Rule evaluation: True' : 'Rule evaluation: False');
+    } catch (error) {
+      setEvaluationResult(`Error: ${error.message}`);
+    }
+  };
+
+   return (
+     <div className="p-4 max-w-2xl mx-auto">
+       <h1 className="text-2xl font-bold mb-4">Rule Engine</h1>
+
+       <div className="mb-4">
+         <h2 className="text-xl mb-2">Create New Rule</h2>
+         <Input
+           placeholder="Enter rule (e.g., age > 30 AND department = 'Sales')"
+           value={newRule}
+           onChange={(e) => setNewRule(e.target.value)}
+           className="mb-2"
+         />
+         <Button onClick={addRule}>Add Rule</Button>
+       </div>
+
+       {rules.length > 0 && (
+         <div className="mb-4">
+           <h2 className="text-xl mb-2">Current Rules</h2>
+           <ul className="list-disc pl-5 mb-2">
+             {rules.map((rule, index) => (
+               <li key={index}>{rule}</li>
+             ))}
+           </ul>
+           <Button onClick={combineRules}>Combine Rules</Button>
+         </div>
+       )}
+
+       {combinedRule && (
+         <div className="mb-4">
+           <h2 className="text-xl mb-2">Combined Rule</h2>
+           <p>{combinedRule}</p>
+         </div>
+       )}
+
+       <div className="mb-4">
+         <h2 className="text-xl mb-2">User Data (JSON format)</h2>
+         <Textarea
+           value={userData}
+           onChange={(e) => setUserData(e.target.value)}
+           rows={4}
+           className="mb-2"
+         />
+       </div>
+
+       <Button onClick={evaluateRule}>Evaluate Rule</Button>
+
+       {evaluationResult && (
+         <div className="mt-4">
+           <h2 className="text-xl mb-2">Evaluation Result</h2>
+           <p>{evaluationResult}</p>
+         </div>
+       )}
+     </div>
+   );
+ };
+
+ export default RuleEngine;
