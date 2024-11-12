@@ -1,4 +1,6 @@
-package entity;
+package com.engine.rule.service;
+
+import com.engine.rule.entity.Node;
 
 public class RuleParser {
 

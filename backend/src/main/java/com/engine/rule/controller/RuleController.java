@@ -1,4 +1,4 @@
-package controller;
+package com.engine.rule.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -7,12 +7,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import com.engine.rule.service.RuleService;
+
 @RestController
 @RequestMapping("/api/rules")
 public class RuleController {
 
     @Autowired
     private RuleService ruleService;
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("API is working");
+    }
 
     @PostMapping("/create")
     public ResponseEntity<String> createRule(@RequestBody String rule) {

@@ -1,9 +1,10 @@
-package service;
+package com.engine.rule.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.engine.rule.entity.Node;
 
-public class RuleEvaluator {
+public class RuleParser {
 
     public boolean evaluate(Node ruleNode, String jsonData) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();

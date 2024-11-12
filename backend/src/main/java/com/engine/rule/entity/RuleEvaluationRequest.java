@@ -1,4 +1,4 @@
-package entity;
+package com.engine.rule.entity;
 
 public class RuleEvaluationRequest {
     private int age;
