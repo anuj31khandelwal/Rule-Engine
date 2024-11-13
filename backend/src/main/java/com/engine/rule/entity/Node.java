@@ -1,11 +1,6 @@
 package com.engine.rule.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "nodes")
@@ -25,6 +20,10 @@ public class Node {
     @OneToOne
     private Node right;
 
+    private String operator;
+    // E.g., "AND", "OR", ">", "<"
+    private String operand;  // Holds operand values if it’s a leaf node
+
     public Node() {
     }
 
@@ -33,6 +32,7 @@ public class Node {
         this.type = type;
         this.value = value;
     }
+
 
     @Override
     public String toString() {
@@ -45,6 +45,19 @@ public class Node {
     }
 
     // Getters and setters
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getType() {
         return type;
     }
@@ -76,4 +89,25 @@ public class Node {
     public void setRight(Node right) {
         this.right = right;
     }
+    public void setOperator(String newOperator) {
+        this.operator = newOperator;
+    }
+
+    public void setOperand(String newOperand) {
+        this.operand = newOperand;
+    }
+
+    public void addLeftChild(Node child) {
+        this.left = child;
+    }
+
+    public void addRightChild(Node child) {
+        this.right = child;
+    }
+
+    public void removeChild(boolean isLeft) {
+        if (isLeft) this.left = null;
+        else this.right = null;
+    }
+
 }
