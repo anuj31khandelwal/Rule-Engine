@@ -1,6 +1,7 @@
 package com.engine.rule;
 
 import com.engine.rule.validation.AttributeValidationService;
+import com.engine.rule.validation.RuleValidator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -9,6 +10,23 @@ import java.util.Map;
 
 @SpringBootApplication
 public class RuleApplication {
+	public void processRule(String rule) {
+		RuleValidator validator = new RuleValidator();
+
+		try {
+			// Pass the rule through the validator
+			validator.validateRule(rule);
+
+			// If validation is successful, proceed to parse and execute the rule
+			System.out.println("Rule is valid. Proceeding with execution...");
+
+			// Add your rule execution logic here
+
+		} catch (RuleValidator.InvalidRuleException e) {
+			// Handle invalid rule format or syntax errors
+			System.err.println("Invalid rule: " + e.getMessage());
+		}
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(RuleApplication.class, args);
@@ -27,5 +45,4 @@ public class RuleApplication {
 			System.out.println("Some attributes are invalid. Please check the input values.");
 		}
 	}
-
-}
+	}

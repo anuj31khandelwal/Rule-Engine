@@ -2,7 +2,9 @@ package com.engine.rule.controller;
 
 import com.engine.rule.entity.Node;
 import com.engine.rule.repository.NodeRepository;
+import com.engine.rule.validation.RuleValidator.InvalidRuleException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,16 +30,26 @@ public class RuleController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Node> createRule(@RequestBody String rule) {
-        Node createdRule = ruleService.createRule(rule);
-        return ResponseEntity.ok(createdRule);
+    public ResponseEntity<Object> createRule(@RequestBody String rule) {
+        try {
+            Node createdRule = ruleService.createRule(rule);
+            return ResponseEntity.ok(createdRule);
+        } catch (InvalidRuleException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid rule: " + e.getMessage());
+        }
     }
 
     @PostMapping("/combine")
     public ResponseEntity<Node> combineRules(@RequestBody List<String> rules, @RequestParam String operator) {
         // Convert the string-based rules into Node objects
         List<Node> ruleNodes = rules.stream()
-                .map(rule -> ruleService.createRule(rule))
+                .map(rule -> {
+                    try {
+                        return ruleService.createRule(rule);
+                    } catch (InvalidRuleException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
                 .collect(Collectors.toList());
 
         // Combine the nodes with the provided operator

@@ -2,6 +2,7 @@ package com.engine.rule.service;
 
 import com.engine.rule.entity.Node;
 import com.engine.rule.repository.NodeRepository;
+import com.engine.rule.validation.RuleValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +16,19 @@ import java.util.stream.Collectors;
 @Service
 public class RuleService {
 
+    private final RuleValidator ruleValidator;
+
+    public RuleService(RuleValidator ruleValidator) {
+        this.ruleValidator = ruleValidator;
+    }
+
     @Autowired
     private NodeRepository nodeRepository;
 
     // Method to parse and create a rule as a Node tree
-    public Node createRule(String rule) {
+    public Node createRule(String rule) throws RuleValidator.InvalidRuleException {
         System.out.println("Parsing rule: " + rule);
+        ruleValidator.validateRule(rule);
         Node rootNode = parseRule(rule);
         saveNodeTree(rootNode); // Recursively saves the node tree in the database
         return rootNode;
