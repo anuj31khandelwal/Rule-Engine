@@ -66,7 +66,7 @@ Example Request:
 ***Setup Instructions***
 Clone the repository:
 ```bash
-git clone <repository-url>
+git clone <git@github.com:anuj31khandelwal/Rule-Engine.git>
 cd rule-engine-ast
 ```
 Install dependencies:
